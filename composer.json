@@ -1,0 +1,14 @@
+{
+    "name": "grena/planet-generator",
+    "type": "project",
+    "require": {
+        "php": ">=7.1.0",
+        "a1essandro/perlin-noise": "@stable"
+    },
+    "authors": [
+        {
+            "name": "Adrien Pétremann",
+            "email": "hello@grena.fr"
+        }
+    ]
+}
