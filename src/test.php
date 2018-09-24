@@ -54,7 +54,7 @@ function createPlanet($canvas): void
     outputLayer($planetCanvas, 'planet');
 
     $planetShadow = new gd_gradient_alpha($WIDTH / 1.5, $HEIGHT / 1.5 , 'ellipse', '#000', 0xFF, 0x00, 0);
-    outputLayer($planetCanvas, 'shadow');
+    outputLayer($planetShadow->image, 'shadow');
 
     $dest_image = imagecreatetruecolor(WIDTH, HEIGHT);
     imagesavealpha($dest_image, true);
@@ -63,14 +63,14 @@ function createPlanet($canvas): void
 
     imagecopy($dest_image, $planetCanvas, 0, 0, 0, 0, WIDTH, HEIGHT);
     imagecopy($dest_image, $planetShadow->image, 25, 25, 0, 0, WIDTH, HEIGHT);
-    outputLayer($planetCanvas, 'planet+shadow');
+    outputLayer($dest_image, 'planet+shadow');
 
     $planetMask = imagecreatetruecolor($WIDTH, $HEIGHT);
     imagealphablending($planetMask, false);
     imagesavealpha($planetMask, true);
     imagefilledrectangle($planetMask, 0, 0, $WIDTH, $WIDTH, $transparent);
     imagefilledellipse($planetMask, $WIDTH / 2, $HEIGHT / 2, $planetSize, $planetSize, $black);
-    outputLayer($planetCanvas, 'planetmask');
+    outputLayer($planetMask, 'planetmask');
 
     imagealphamask($dest_image, $planetMask);
     imagecopy($canvas, $dest_image, 0, 0, 0, 0, $WIDTH, $HEIGHT);
