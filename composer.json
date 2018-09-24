@@ -3,7 +3,11 @@
     "type": "project",
     "require": {
         "php": ">=7.1.0",
+        "ext-gd": "@stable",
         "a1essandro/perlin-noise": "@stable"
+    },
+    "autoload": {
+        "classmap": ["src/"]
     },
     "authors": [
         {

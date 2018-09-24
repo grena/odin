@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "150966b91cc6f75037e8c7d413875c20",
+    "content-hash": "f8506872f514a41e4d11ec42c10fae5d",
     "packages": [
         {
             "name": "a1essandro/perlin-noise",
@@ -51,10 +51,14 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "ext-gd": 0,
         "a1essandro/perlin-noise": 0
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.1.0",
+        "ext-gd": "@stable"
+    },
     "platform-dev": []
 }
