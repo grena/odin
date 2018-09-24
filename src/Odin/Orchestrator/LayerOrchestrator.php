@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odin\Orchestrator;
 
+use Odin\Drawer\Gd\ColorHelper;
+
 class LayerOrchestrator
 {
     private $image;
@@ -29,7 +31,7 @@ class LayerOrchestrator
 
     public function setBackgroundColor($hexColor = '#000', $alpha = 0)
     {
-        list($r, $g, $b) = $this->hex2rgb($hexColor);
+        list($r, $g, $b) = ColorHelper::hexToRgb($hexColor);
         $this->image = imagecreatetruecolor($this->width, $this->height);
         imagesavealpha($this->image, true);
         $backgroundColor = imagecolorallocatealpha($this->image, $r, $g, $b, $alpha);
@@ -48,17 +50,4 @@ class LayerOrchestrator
     {
         return $this->image;
     }
-
-    // #ff00ff -> array(255,0,255) or #f0f -> array(255,0,255)
-    private function hex2rgb($color)
-    {
-        $color = str_replace('#', '', $color);
-        $s = strlen($color) / 3;
-        $rgb[] = hexdec(str_repeat(substr($color, 0, $s), 2 / $s));
-        $rgb[] = hexdec(str_repeat(substr($color, $s, $s), 2 / $s));
-        $rgb[] = hexdec(str_repeat(substr($color, 2 * $s, $s), 2 / $s));
-
-        return $rgb;
-    }
-
 }
