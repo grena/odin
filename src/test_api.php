@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 error_reporting(E_ALL);
 
-include_once ('../vendor/autoload.php');
+include_once (__DIR__ . '/../vendor/autoload.php');
 
 use Odin\Astronomical\Nebulae;
 use Odin\Astronomical\Planet\Planet;
