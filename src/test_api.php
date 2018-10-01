@@ -14,8 +14,9 @@ use Odin\Orchestrator\LayerOrchestrator;
 $WIDTH = 500;
 $HEIGHT = 500;
 
-//$seed = rand();
-$seed = 1845789656;
+$seed = rand();
+//$seed = 1845789656; // nice stars
+//$seed = 798812897;
 mt_srand($seed);
 
 $layerOrchestrator = new LayerOrchestrator();

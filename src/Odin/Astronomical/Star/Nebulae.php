@@ -78,6 +78,7 @@ class Nebulae
 
         $this->filterMultiplyColor($this->image, $r, $g, $b);
 
+        // TODO: find a way to blur the nebulae without losing the opacity
         return $this->image;
     }
 
