@@ -8,6 +8,7 @@ namespace Odin\Astronomical\Planet;
 use MapGenerator\PerlinNoiseGenerator;
 use Odin\Drawer\Gd\ColorHelper;
 use Odin\Drawer\Gd\GradientAlpha;
+use Odin\Drawer\Gd\Text;
 use Odin\Orchestrator\LayerOrchestrator;
 
 class Planet
@@ -34,20 +35,24 @@ class Planet
         $layerOrchestrator->setBaseLayer($this->image);
         $layerOrchestrator->addLayer($this->generateGlow($palette));
 
-        $newLayer = $this->initializeImage();
-        $layerOrchestratorT = new LayerOrchestrator();
-        $layerOrchestratorT->setBaseLayer($newLayer);
-        $layerOrchestratorT->addLayer($this->generatePlanet());
-        $layerOrchestratorT->addLayer($this->generateSurface($palette), $this->width/4, $this->height/4);
-        $layerOrchestratorT->addLayer($this->generateLittleShadow());
-        $layerOrchestratorT->addLayer($this->generateShadow(), -20, rand(-30, 110));
+        $planetLayer = $this->initializeImage();
+        $planetLayers = new LayerOrchestrator();
+        $planetLayers->setBaseLayer($planetLayer);
+        $planetLayers->addLayer($this->generatePlanet());
+        $planetLayers->addLayer($this->generateSurface($palette), $this->width/4, $this->height/4);
+        $planetLayers->addLayer($this->generateLittleShadow());
+        $planetLayers->addLayer($this->generateShadow(), -20, rand(-30, 110));
 
         // Cut the extra shadow
-        $this->applyMask($newLayer, $this->generateMask());
+        $this->applyMask($planetLayer, $this->generateMask());
 
-        $layerOrchestrator->addLayer($newLayer);
+        $layerOrchestrator->addLayer($planetLayer);
 
-        return $layerOrchestrator->render();
+
+        $image = $layerOrchestrator->render();
+        Text::write($image, 'Palette: '.$palette['NAME'], 10, 35);
+
+        return $image;
     }
 
     private function generatePlanet()
@@ -156,10 +161,10 @@ class Planet
         $ice = imagecolorallocate($surface, $r, $g, $b);
         list($r, $g, $b) = ColorHelper::hexToRgb($palette['water']); // WATER
         $water = imagecolorallocate($surface, $r, $g, $b);
+        list($r, $g, $b) = ColorHelper::hexToRgb($palette['shore']); // SHORE
+        $shore = imagecolorallocate($surface, $r, $g, $b);
         list($r, $g, $b) = ColorHelper::hexToRgb($palette['land']); // LAND
         $land = imagecolorallocate($surface, $r, $g, $b);
-        list($r, $g, $b) = ColorHelper::hexToRgb('#fbffcc'); // SAND
-        $sand = imagecolorallocate($surface, $r, $g, $b);
 
         for ($x = 0; $x < $width; ++$x) {
             for ($y = 0; $y < $height; ++$y) {
@@ -167,28 +172,30 @@ class Planet
                 $h = intval($h);
 
                 $color = $water;
+                imagesetpixel($surface, $x, $y, $color);
 
                 if ($h >= 50 && $h < 105) {
                     $color = $land;
+                    imagesetpixel($surface, $x, $y, $color);
                 }
 
                 if ($h >= 110 && $h < 150) {
                     $color = $land;
+                    imagesetpixel($surface, $x, $y, $color);
                 }
 
                 if ($h >= 150 && $h < 180) {
-                    $color = $water;
+                    imagesetpixel($surface, $x -1, $y -1, $water);
+                    imagesetpixel($surface, $x, $y, $shore);
                 }
 
                 if ($h >= 200) {
                     $color = $ice;
+                    imagesetpixel($surface, $x, $y, $color);
                 }
 
-                // Color the pixel
-                imagesetpixel($surface, $x, $y, $color);
-
                 // add texture
-                $color = imagecolorallocatealpha($surface, $h, $h, $h, rand(10, 110));
+                $color = imagecolorallocatealpha($surface, $h, $h, $h, rand(50, 110));
                 imagesetpixel($surface, $x, $y, $color);
             }
         }
@@ -254,12 +261,41 @@ class Planet
     {
         // TODO: find real names
         $palettes = [
-            'earth' => ['water' => '#426dfc', 'land' => '#3B5D38', 'ice' => '#FFFFFF'],
-            'desert' => ['water' => '#f7d3ba', 'land' => '#3B5D38', 'ice' => '#FFFFFF'],
-            'savannah' => ['water' => '#e6b31e', 'land' => '#343434', 'ice' => '#fcfaf1'],
-            'acid' => ['water' => '#12e2a3', 'land' => '#389168', 'ice' => '#ddf516'],
-            'violet' => ['water' => '#e14594', 'land' => '#2b3595', 'ice' => '#182952'],
-            'red' => ['water' => '#eaa81b', 'land' => '#7d0000', 'ice' => '#012c0b'],
+            'terran' => [
+                'NAME' => 'Terran',
+                'water' => '#426dfc',
+                'shore' => '#519a47',
+                'land' => '#3B5D38',
+                'ice' => '#FFFFFF'
+            ],
+            'ashes' => [
+                'NAME' => 'Ashes',
+                'water' => '#000000',
+                'shore' => '#9c7a14',
+                'land' => '#343434',
+                'ice' => '#fcfaf1'
+            ],
+            'toxic' => [
+                'NAME' => 'Toxic',
+                'water' => '#12e2a3',
+                'shore' => '#ffffff',
+                'land' => '#389168',
+                'ice' => '#ddf516'
+            ],
+            'violet' => [
+                'NAME' => 'Violet',
+                'water' => '#e14594',
+                'shore' => '#939cf6',
+                'land' => '#2b3595',
+                'ice' => '#182952'
+            ],
+            'lava' => [
+                'NAME' => 'Lava',
+                'water' => '#ff2116',
+                'shore' => '#f5b915',
+                'land' => '#ff7716',
+                'ice' => '#f8ec00'
+            ],
         ];
 
         $keys = array_keys($palettes);
