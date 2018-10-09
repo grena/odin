@@ -23,6 +23,8 @@ class Planet
     {
         $this->width = $width;
         $this->height = $height;
+
+        $this->planetSize = $this->makeEven(rand(100, 250));
     }
 
     public function render()
@@ -30,25 +32,23 @@ class Planet
         $palette = $this->selectPalette();
 
         $percentShiftShadowX = -30;
-        $percentShiftShadowY = rand(-15, 15) * 2;
+        $percentShiftShadowY = $this->makeEven(rand(-30, 30));
 
-        $this->image = $this->initializeImage();
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->setBaseLayer($this->image);
-        $layerOrchestrator->addLayer($this->generateGlow($palette), $percentShiftShadowX, $percentShiftShadowY);
+        $layerOrchestrator->initBaseLayer($this->width, $this->height, '#000', 127);
+        $layerOrchestrator->addLayer($this->generateGlow($palette), $percentShiftShadowX / 2, $percentShiftShadowY / 2);
 
-        $planetLayer = $this->initializeImage();
         $planetLayers = new LayerOrchestrator();
-        $planetLayers->setBaseLayer($planetLayer);
+        $planetLayers->initBaseLayer($this->width, $this->height, '#000', 127);
+        $planetLayer = $planetLayers->render();
+
         $planetLayers->addLayer($this->generatePlanet());
         $planetLayers->addLayer($this->generateSurface($palette));
         $planetLayers->addLayer($this->generateLittleShadow());
 
-//        $planetLayers->addLayer($this->generateLight(), $shadowX, $shadowY);
-
         // Randomly move the shadow
-        $shadowX = ($percentShiftShadowX * $this->planetSize) / 100;
-        $shadowY = ($percentShiftShadowY * $this->planetSize) / 100;
+        $shadowX = $this->makeEven(($percentShiftShadowX * $this->planetSize) / 100);
+        $shadowY = $this->makeEven(($percentShiftShadowY * $this->planetSize) / 100);
         $planetLayers->addLayer($this->generateShadow(), $shadowX, $shadowY);
 
         // Cut the extra shadow
@@ -59,12 +59,17 @@ class Planet
         $image = $layerOrchestrator->render();
         Text::write($image, 'Palette: '.$palette['NAME'], 10, 35);
 
+        $this->image = $layerOrchestrator->render();
+
         return $image;
     }
 
     private function generatePlanet()
     {
-        $planet = $this->initializeImage();
+        $layerOrchestrator = new LayerOrchestrator();
+        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $planet = $layerOrchestrator->render();
+
         $blue = imagecolorallocate($planet, 62, 86, 124);
         imagefilledellipse($planet, $this->width / 2, $this->height / 2, $this->planetSize, $this->planetSize, $blue);
 
@@ -75,26 +80,27 @@ class Planet
     {
         $glowness = 0xAA; // the more, the more it glows
 
-        $layer = $this->initializeImage();
-
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->setBaseLayer($layer);
+        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $layer = $layerOrchestrator->render();
 
-        $w = (int) ($this->planetSize + 60);
-        $h = (int) ($this->planetSize + 60);
+        $w = $this->makeEven(round($this->planetSize * 1.2));
+        $h = $this->makeEven(round($this->planetSize * 1.2));
         $glow = new GradientAlpha($w, $h, 'ellipse', $palette['water'], 0x00, $glowness, 0);
 
-        $layerOrchestrator->addLayer($glow->image, $this->width / 2 - $w/2, $this->height / 2 - $h/2);
+        $x = ($this->width / 2) - ($w / 2);
+        $y = ($this->height / 2) - ($h / 2);
+
+        $layerOrchestrator->addLayer($glow->image, $x, $y);
 
         return $layer;
     }
 
     private function generateLittleShadow()
     {
-        $layer = $this->initializeImage();
-
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->setBaseLayer($layer);
+        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $layer = $layerOrchestrator->render();
 
         $w = (int) ($this->planetSize + 10);
         $h = (int) ($this->planetSize + 10);
@@ -113,19 +119,19 @@ class Planet
      */
     private function generateShadow()
     {
+        $layerOrchestrator = new LayerOrchestrator();
+        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $layer = $layerOrchestrator->render();
+
         $layerWidth = $this->width;
         $layerHeight = $this->height;
 
-        $layer = $this->initializeImage();
-        $w = (int) ($this->planetSize * 1.4);
-        $h = (int) ($this->planetSize * 1.4);
+        $w = $this->makeEven($this->planetSize * 1.4);
+        $h = $this->makeEven($this->planetSize * 1.4);
 
         // TODO: try a "inverted" shadow too (https://i1.wp.com/www.designshard.com/wp-content/uploads/2009/04/planet-tutorial.jpg?resize=578%2C300)
 //        $shadow = new GradientAlpha($w, $h, 'ellipse', '#000', 0x00, 0xFF, 0);
         $shadow = new GradientAlpha($w, $h, 'ellipse', '#000', 0xFF, 0x00, 0);
-
-        $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->setBaseLayer($layer);
 
         // Set the center of the radial gradient on the center of the planet
         $x = (($layerWidth - $this->planetSize) / 2) - (($w - $this->planetSize) / 2);
@@ -147,51 +153,12 @@ class Planet
         return $layer;
     }
 
-    /**
-     * The shadow consists of a radial gradient from transparent to black.
-     * The all the reste outside it is fully painted in black.
-     *
-     * @return resource
-     */
-    private function generateLight()
-    {
-        $layerWidth = $this->width;
-        $layerHeight = $this->height;
-
-        $layer = $this->initializeImage();
-        $w = (int) ($this->planetSize * 1.4);
-        $h = (int) ($this->planetSize * 1.4);
-
-        // TODO: try a "inverted" shadow too (https://i1.wp.com/www.designshard.com/wp-content/uploads/2009/04/planet-tutorial.jpg?resize=578%2C300)
-//        $shadow = new GradientAlpha($w, $h, 'ellipse', '#000', 0x00, 0xFF, 0);
-        $shadow = new GradientAlpha($w, $h, 'ellipse', '#FFF', 0xFF, 0x00, 0);
-
-        $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->setBaseLayer($layer);
-
-        // Set the center of the radial gradient on the center of the planet
-        $x = (($layerWidth - $this->planetSize) / 2) - (($w - $this->planetSize) / 2);
-        $y = ($layerHeight - $this->planetSize) / 2 - (($h - $this->planetSize) / 2);
-
-        $xStart = $x;
-        $xEnd = $x + $w;
-        $yStart = $y;
-        $yEnd = $y + $h;
-
-        // Fill up the rest of full black
-        imagefilledrectangle($layer, 0, 0, $layerWidth, $yStart, imagecolorallocate($layer, 255, 255, 255));
-        imagefilledrectangle($layer, 0, 0, $xStart, $layerHeight, imagecolorallocate($layer, 255, 255, 255));
-        imagefilledrectangle($layer, $layerWidth, 0, $xEnd, $layerHeight, imagecolorallocate($layer, 255, 255, 255));
-        imagefilledrectangle($layer, 0, $layerHeight, $layerWidth, $yEnd, imagecolorallocate($layer, 255, 255, 255));
-
-        $layerOrchestrator->addLayer($shadow->image, $x, $y);
-
-        return $layer;
-    }
-
     private function generateMask()
     {
-        $mask = $this->initializeImage();
+        $layerOrchestrator = new LayerOrchestrator();
+        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $mask = $layerOrchestrator->render();
+
         $black = imagecolorallocatealpha($mask, 0, 30, 0, 0);
 
         imagefilledellipse($mask, $this->width / 2, $this->height / 2, $this->planetSize, $this->planetSize, $black);
@@ -201,11 +168,13 @@ class Planet
 
     private function generateSurface(array $palette)
     {
-        $layer = $this->initializeImage();
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->setBaseLayer($layer);
+        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
 
-        $surface = $this->initializeImage($this->planetSize, $this->planetSize);
+        $surfaceLayers = new LayerOrchestrator();
+        $surfaceLayers->initBaseLayer($this->planetSize, $this->planetSize, '#000', 127);
+        $surface = $surfaceLayers->render();
+
         $seed = rand();
 
         $height = $this->planetSize;
@@ -389,16 +358,15 @@ class Planet
         return $palettes[$paletteName];
     }
 
-    private function initializeImage($width = null, $height = null)
+    // TODO: move to dedicated Math class
+    private function makeEven($number): int
     {
-        $width = $width ? $width : $this->width;
-        $height = $height ? $height : $this->height;
+        $number = intval($number);
 
-        $canvas = imagecreatetruecolor($width, $height);
-        imagesavealpha($canvas, true);
-        $transparentBackground = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
-        imagefill($canvas, 0, 0, $transparentBackground);
+        if ($number % 2 === 0) {
+            return $number;
+        }
 
-        return $canvas;
+        return $number + 1;
     }
 }
