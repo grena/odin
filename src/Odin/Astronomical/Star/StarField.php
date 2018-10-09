@@ -6,7 +6,7 @@ namespace Odin\Astronomical;
 
 use Odin\Drawer\Gd\ColorHelper;
 use Odin\Drawer\Gd\GradientAlpha;
-use Odin\Orchestrator\LayerOrchestrator;
+use Odin\Drawer\Gd\LayerOrchestrator;
 
 class StarField
 {

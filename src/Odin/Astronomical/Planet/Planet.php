@@ -7,8 +7,8 @@ namespace Odin\Astronomical\Planet;
 use MapGenerator\PerlinNoiseGenerator;
 use Odin\Drawer\Gd\ColorHelper;
 use Odin\Drawer\Gd\GradientAlpha;
+use Odin\Drawer\Gd\LayerOrchestrator;
 use Odin\Drawer\Gd\Text;
-use Odin\Orchestrator\LayerOrchestrator;
 
 class Planet
 {

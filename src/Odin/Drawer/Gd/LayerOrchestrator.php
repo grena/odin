@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Odin\Orchestrator;
-
-use Odin\Drawer\Gd\ColorHelper;
+namespace Odin\Drawer\Gd;
 
 class LayerOrchestrator
 {

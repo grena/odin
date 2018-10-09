@@ -6,7 +6,7 @@ namespace Odin\Astronomical;
 
 use MapGenerator\PerlinNoiseGenerator;
 use Odin\Drawer\Gd\ColorHelper;
-use Odin\Orchestrator\LayerOrchestrator;
+use Odin\Drawer\Gd\LayerOrchestrator;
 
 class Nebulae
 {

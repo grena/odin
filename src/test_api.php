@@ -8,8 +8,8 @@ include_once (__DIR__ . '/../vendor/autoload.php');
 use Odin\Astronomical\Nebulae;
 use Odin\Astronomical\Planet\Planet;
 use Odin\Astronomical\StarField;
+use Odin\Drawer\Gd\LayerOrchestrator;
 use Odin\Drawer\Gd\Text;
-use Odin\Orchestrator\LayerOrchestrator;
 
 $WIDTH = 500;
 $HEIGHT = 500;
