@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Odin\Astronomical\Planet;
 
-
 use MapGenerator\PerlinNoiseGenerator;
 use Odin\Drawer\Gd\ColorHelper;
 use Odin\Drawer\Gd\GradientAlpha;
@@ -30,24 +29,32 @@ class Planet
     {
         $palette = $this->selectPalette();
 
+        $percentShiftShadowX = -30;
+        $percentShiftShadowY = rand(-15, 15) * 2;
+
         $this->image = $this->initializeImage();
         $layerOrchestrator = new LayerOrchestrator();
         $layerOrchestrator->setBaseLayer($this->image);
-        $layerOrchestrator->addLayer($this->generateGlow($palette));
+        $layerOrchestrator->addLayer($this->generateGlow($palette), $percentShiftShadowX, $percentShiftShadowY);
 
         $planetLayer = $this->initializeImage();
         $planetLayers = new LayerOrchestrator();
         $planetLayers->setBaseLayer($planetLayer);
         $planetLayers->addLayer($this->generatePlanet());
-        $planetLayers->addLayer($this->generateSurface($palette), $this->width/4, $this->height/4);
+        $planetLayers->addLayer($this->generateSurface($palette));
         $planetLayers->addLayer($this->generateLittleShadow());
-        $planetLayers->addLayer($this->generateShadow(), -20, rand(-30, 110));
+
+//        $planetLayers->addLayer($this->generateLight(), $shadowX, $shadowY);
+
+        // Randomly move the shadow
+        $shadowX = ($percentShiftShadowX * $this->planetSize) / 100;
+        $shadowY = ($percentShiftShadowY * $this->planetSize) / 100;
+        $planetLayers->addLayer($this->generateShadow(), $shadowX, $shadowY);
 
         // Cut the extra shadow
         $this->applyMask($planetLayer, $this->generateMask());
 
         $layerOrchestrator->addLayer($planetLayer);
-
 
         $image = $layerOrchestrator->render();
         Text::write($image, 'Palette: '.$palette['NAME'], 10, 35);
@@ -66,6 +73,8 @@ class Planet
 
     private function generateGlow(array $palette)
     {
+        $glowness = 0xAA; // the more, the more it glows
+
         $layer = $this->initializeImage();
 
         $layerOrchestrator = new LayerOrchestrator();
@@ -73,7 +82,7 @@ class Planet
 
         $w = (int) ($this->planetSize + 60);
         $h = (int) ($this->planetSize + 60);
-        $glow = new GradientAlpha($w, $h, 'ellipse', $palette['water'], 0x00, 0x44, 0);
+        $glow = new GradientAlpha($w, $h, 'ellipse', $palette['water'], 0x00, $glowness, 0);
 
         $layerOrchestrator->addLayer($glow->image, $this->width / 2 - $w/2, $this->height / 2 - $h/2);
 
@@ -89,20 +98,27 @@ class Planet
 
         $w = (int) ($this->planetSize + 10);
         $h = (int) ($this->planetSize + 10);
-        $shadow = new GradientAlpha($w, $h, 'ellipse', '#FFF', 0x33, 0x00, 0);
+        $shadow = new GradientAlpha($w, $h, 'ellipse', '#FFF', 0x44, 0x00, 0);
 
         $layerOrchestrator->addLayer($shadow->image, $this->width / 2 - $w/2, $this->height / 2 - $h/2);
 
         return $layer;
     }
 
+    /**
+     * The shadow consists of a radial gradient from transparent to black.
+     * The all the reste outside it is fully painted in black.
+     *
+     * @return resource
+     */
     private function generateShadow()
     {
-        $layer = $this->initializeImage(900, 900);
+        $layerWidth = $this->width;
+        $layerHeight = $this->height;
+
+        $layer = $this->initializeImage();
         $w = (int) ($this->planetSize * 1.4);
         $h = (int) ($this->planetSize * 1.4);
-        imagefilledrectangle($layer, $w, 0, 900, 900, imagecolorallocate($layer, 0, 0, 0));
-        imagefilledrectangle($layer, 0, $h, 900, 900, imagecolorallocate($layer, 0, 0, 0));
 
         // TODO: try a "inverted" shadow too (https://i1.wp.com/www.designshard.com/wp-content/uploads/2009/04/planet-tutorial.jpg?resize=578%2C300)
 //        $shadow = new GradientAlpha($w, $h, 'ellipse', '#000', 0x00, 0xFF, 0);
@@ -110,7 +126,65 @@ class Planet
 
         $layerOrchestrator = new LayerOrchestrator();
         $layerOrchestrator->setBaseLayer($layer);
-        $layerOrchestrator->addLayer($shadow->image);
+
+        // Set the center of the radial gradient on the center of the planet
+        $x = (($layerWidth - $this->planetSize) / 2) - (($w - $this->planetSize) / 2);
+        $y = ($layerHeight - $this->planetSize) / 2 - (($h - $this->planetSize) / 2);
+
+        $xStart = $x;
+        $xEnd = $x + $w;
+        $yStart = $y;
+        $yEnd = $y + $h;
+
+        // Fill up the rest of full black
+        imagefilledrectangle($layer, 0, 0, $layerWidth, $yStart, imagecolorallocate($layer, 0, 0, 0));
+        imagefilledrectangle($layer, 0, 0, $xStart, $layerHeight, imagecolorallocate($layer, 0, 0, 0));
+        imagefilledrectangle($layer, $layerWidth, 0, $xEnd, $layerHeight, imagecolorallocate($layer, 0, 0, 0));
+        imagefilledrectangle($layer, 0, $layerHeight, $layerWidth, $yEnd, imagecolorallocate($layer, 0, 0, 0));
+
+        $layerOrchestrator->addLayer($shadow->image, $x, $y);
+
+        return $layer;
+    }
+
+    /**
+     * The shadow consists of a radial gradient from transparent to black.
+     * The all the reste outside it is fully painted in black.
+     *
+     * @return resource
+     */
+    private function generateLight()
+    {
+        $layerWidth = $this->width;
+        $layerHeight = $this->height;
+
+        $layer = $this->initializeImage();
+        $w = (int) ($this->planetSize * 1.4);
+        $h = (int) ($this->planetSize * 1.4);
+
+        // TODO: try a "inverted" shadow too (https://i1.wp.com/www.designshard.com/wp-content/uploads/2009/04/planet-tutorial.jpg?resize=578%2C300)
+//        $shadow = new GradientAlpha($w, $h, 'ellipse', '#000', 0x00, 0xFF, 0);
+        $shadow = new GradientAlpha($w, $h, 'ellipse', '#FFF', 0xFF, 0x00, 0);
+
+        $layerOrchestrator = new LayerOrchestrator();
+        $layerOrchestrator->setBaseLayer($layer);
+
+        // Set the center of the radial gradient on the center of the planet
+        $x = (($layerWidth - $this->planetSize) / 2) - (($w - $this->planetSize) / 2);
+        $y = ($layerHeight - $this->planetSize) / 2 - (($h - $this->planetSize) / 2);
+
+        $xStart = $x;
+        $xEnd = $x + $w;
+        $yStart = $y;
+        $yEnd = $y + $h;
+
+        // Fill up the rest of full black
+        imagefilledrectangle($layer, 0, 0, $layerWidth, $yStart, imagecolorallocate($layer, 255, 255, 255));
+        imagefilledrectangle($layer, 0, 0, $xStart, $layerHeight, imagecolorallocate($layer, 255, 255, 255));
+        imagefilledrectangle($layer, $layerWidth, 0, $xEnd, $layerHeight, imagecolorallocate($layer, 255, 255, 255));
+        imagefilledrectangle($layer, 0, $layerHeight, $layerWidth, $yEnd, imagecolorallocate($layer, 255, 255, 255));
+
+        $layerOrchestrator->addLayer($shadow->image, $x, $y);
 
         return $layer;
     }
@@ -127,7 +201,11 @@ class Planet
 
     private function generateSurface(array $palette)
     {
-        $surface = $this->initializeImage();
+        $layer = $this->initializeImage();
+        $layerOrchestrator = new LayerOrchestrator();
+        $layerOrchestrator->setBaseLayer($layer);
+
+        $surface = $this->initializeImage($this->planetSize, $this->planetSize);
         $seed = rand();
 
         $height = $this->planetSize;
@@ -200,7 +278,12 @@ class Planet
             }
         }
 
-        return $surface;
+        $x = ($this->width / 2) - ($width / 2);
+        $y = ($this->height / 2) - ($height / 2);
+
+        $layerOrchestrator->addLayer($surface, $x, $y);
+
+        return $layerOrchestrator->render();
     }
 
     private function applyMask(&$picture, $mask)
@@ -273,7 +356,7 @@ class Planet
                 'water' => '#000000',
                 'shore' => '#9c7a14',
                 'land' => '#343434',
-                'ice' => '#fcfaf1'
+                'ice' => '#c8c6bf'
             ],
             'toxic' => [
                 'NAME' => 'Toxic',
@@ -291,8 +374,8 @@ class Planet
             ],
             'lava' => [
                 'NAME' => 'Lava',
-                'water' => '#ff2116',
-                'shore' => '#f5b915',
+                'water' => '#ff4f16',
+                'shore' => '#ffa616',
                 'land' => '#ff7716',
                 'ice' => '#f8ec00'
             ],
