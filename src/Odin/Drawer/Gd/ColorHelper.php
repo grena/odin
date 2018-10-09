@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Odin\Drawer\Gd;
 
-
 class ColorHelper
 {
     // $color received is the integer generated from imagecreatetruecolor()
