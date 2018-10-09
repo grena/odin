@@ -39,7 +39,7 @@ class Nebulae
         $layerOrchestrator->setBaseLayer($this->image);
 
         $nebulaeDisplayThreshold = 180; // the less, the more we display the nebulae (max 255)
-        $nebulaeOpacity = 120; // 0 - 127 (127 = fully transparent) 115 ok
+        $nebulaeOpacity = 123; // 0 - 127 (127 = fully transparent) 115 ok
 
         $gen = new PerlinNoiseGenerator();
         $size = $this->width;
