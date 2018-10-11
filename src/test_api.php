@@ -7,6 +7,7 @@ include_once (__DIR__ . '/../vendor/autoload.php');
 
 use Odin\Astronomical\Nebulae;
 use Odin\Astronomical\Planet\Planet;
+use Odin\Astronomical\Planet\Surface\Biome;
 use Odin\Astronomical\StarField;
 use Odin\Drawer\Gd\LayerOrchestrator;
 use Odin\Drawer\Gd\Text;
@@ -41,8 +42,10 @@ $nebulae->setColor('#fb3a76');
 $layerOrchestrator->addLayer($nebulae->render());
 
 // Planet
-$planet = new Planet($WIDTH, $HEIGHT);
-$layerOrchestrator->addLayer($planet->render());
+$planet = new Planet('Lava');
+$layerOrchestrator->addLayer($planet->render(), 0, 0);
+//$planet = new Planet($WIDTH, $HEIGHT);
+//$layerOrchestrator->addLayer($planet->render(), -300, -400);
 
 $image = $layerOrchestrator->render();
 
