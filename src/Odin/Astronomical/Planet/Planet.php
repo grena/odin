@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Odin\Astronomical\Planet;
 
-use MapGenerator\PerlinNoiseGenerator;
-use Odin\Drawer\Gd\ColorHelper;
+use Odin\Astronomical\Planet\Surface\BiomeInterface;
+use Odin\Astronomical\Planet\Surface\BiomeSurfaceGeneratorRegistry;
 use Odin\Drawer\Gd\GradientAlpha;
 use Odin\Drawer\Gd\LayerOrchestrator;
 use Odin\Drawer\Gd\Text;
@@ -14,37 +14,57 @@ class Planet
 {
     private $image;
 
-    private $width;
-    private $height;
+    /** @var int */
+    private $layerWidth;
 
-    private $planetSize = 250;
+    /** @var int */
+    private $layerHeight;
 
-    public function __construct(int $width, int $height)
+    /** @var string */
+    private $biome;
+
+    /** @var int */
+    private $planetSize;
+
+    public function __construct(string $biome, ?int $planetSize = null)
     {
-        $this->width = $width;
-        $this->height = $height;
+        $this->biome = $biome;
 
-        $this->planetSize = $this->makeEven(rand(100, 250));
+        if (null !== $planetSize) {
+            $this->planetSize = $planetSize;
+        } else {
+            $this->planetSize = $this->makeEven(rand(100, 250));
+        }
+
+        $this->layerWidth = $this->planetSize * 2;
+        $this->layerHeight = $this->planetSize * 2;
     }
 
     public function render()
     {
-        $palette = $this->selectPalette();
+        $generatorRegistry = new BiomeSurfaceGeneratorRegistry();
+        /** @var BiomeInterface $surfaceGenerator */
+        $surfaceGenerator = $generatorRegistry->forBiome($this->biome);
 
         $percentShiftShadowX = -30;
         $percentShiftShadowY = $this->makeEven(rand(-30, 30));
 
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->initBaseLayer($this->width, $this->height, '#000', 127);
-        $layerOrchestrator->addLayer($this->generateGlow($palette), $percentShiftShadowX / 2, $percentShiftShadowY / 2);
+        $layerOrchestrator->initBaseLayer($this->layerWidth, $this->layerHeight, '#000', 127);
+        $layerOrchestrator->addLayer($this->generateGlow($surfaceGenerator->getColorPalette()), $percentShiftShadowX / 2, $percentShiftShadowY / 2);
 
         $planetLayers = new LayerOrchestrator();
-        $planetLayers->initBaseLayer($this->width, $this->height, '#000', 127);
+        $planetLayers->initBaseLayer($this->layerWidth, $this->layerHeight, '#000', 127);
         $planetLayer = $planetLayers->render();
 
-        $planetLayers->addLayer($this->generatePlanet());
-        $planetLayers->addLayer($this->generateSurface($palette));
-        $planetLayers->addLayer($this->generateLittleShadow());
+        // Generate surface
+        $surface = $surfaceGenerator->generate($this->planetSize);
+        $x = ($this->layerWidth / 2) - ($this->planetSize / 2);
+        $y = ($this->layerHeight / 2) - ($this->planetSize / 2);
+        $planetLayers->addLayer($surface, $x, $y);
+
+        // Generate small brightness on planet
+        $planetLayers->addLayer($this->generateBrightness());
 
         // Randomly move the shadow
         $shadowX = $this->makeEven(($percentShiftShadowX * $this->planetSize) / 100);
@@ -57,23 +77,11 @@ class Planet
         $layerOrchestrator->addLayer($planetLayer);
 
         $image = $layerOrchestrator->render();
-        Text::write($image, 'Palette: '.$palette['NAME'], 10, 35);
+        Text::write($image, 'Palette: '.$surfaceGenerator->getName(), 10, 35);
 
         $this->image = $layerOrchestrator->render();
 
         return $image;
-    }
-
-    private function generatePlanet()
-    {
-        $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
-        $planet = $layerOrchestrator->render();
-
-        $blue = imagecolorallocate($planet, 62, 86, 124);
-        imagefilledellipse($planet, $this->width / 2, $this->height / 2, $this->planetSize, $this->planetSize, $blue);
-
-        return $planet;
     }
 
     private function generateGlow(array $palette)
@@ -81,32 +89,32 @@ class Planet
         $glowness = 0xAA; // the more, the more it glows
 
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $layerOrchestrator->initBaseLayer($this->layerHeight, $this->layerWidth, '#000', 127);
         $layer = $layerOrchestrator->render();
 
         $w = $this->makeEven(round($this->planetSize * 1.2));
         $h = $this->makeEven(round($this->planetSize * 1.2));
         $glow = new GradientAlpha($w, $h, 'ellipse', $palette['water'], 0x00, $glowness, 0);
 
-        $x = ($this->width / 2) - ($w / 2);
-        $y = ($this->height / 2) - ($h / 2);
+        $x = ($this->layerWidth / 2) - ($w / 2);
+        $y = ($this->layerHeight / 2) - ($h / 2);
 
         $layerOrchestrator->addLayer($glow->image, $x, $y);
 
         return $layer;
     }
 
-    private function generateLittleShadow()
+    private function generateBrightness()
     {
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $layerOrchestrator->initBaseLayer($this->layerHeight, $this->layerWidth, '#000', 127);
         $layer = $layerOrchestrator->render();
 
         $w = (int) ($this->planetSize + 10);
         $h = (int) ($this->planetSize + 10);
         $shadow = new GradientAlpha($w, $h, 'ellipse', '#FFF', 0x44, 0x00, 0);
 
-        $layerOrchestrator->addLayer($shadow->image, $this->width / 2 - $w/2, $this->height / 2 - $h/2);
+        $layerOrchestrator->addLayer($shadow->image, $this->layerWidth / 2 - $w/2, $this->layerHeight / 2 - $h/2);
 
         return $layer;
     }
@@ -120,11 +128,11 @@ class Planet
     private function generateShadow()
     {
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $layerOrchestrator->initBaseLayer($this->layerHeight, $this->layerWidth, '#000', 127);
         $layer = $layerOrchestrator->render();
 
-        $layerWidth = $this->width;
-        $layerHeight = $this->height;
+        $layerWidth = $this->layerWidth;
+        $layerHeight = $this->layerHeight;
 
         $w = $this->makeEven($this->planetSize * 1.4);
         $h = $this->makeEven($this->planetSize * 1.4);
@@ -156,105 +164,17 @@ class Planet
     private function generateMask()
     {
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
+        $layerOrchestrator->initBaseLayer($this->layerHeight, $this->layerWidth, '#000', 127);
         $mask = $layerOrchestrator->render();
 
         $black = imagecolorallocatealpha($mask, 0, 30, 0, 0);
 
-        imagefilledellipse($mask, $this->width / 2, $this->height / 2, $this->planetSize, $this->planetSize, $black);
+        imagefilledellipse($mask, $this->layerWidth / 2, $this->layerHeight / 2, $this->planetSize, $this->planetSize, $black);
 
         return $mask;
     }
 
-    private function generateSurface(array $palette)
-    {
-        $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->initBaseLayer($this->height, $this->width, '#000', 127);
-
-        $surfaceLayers = new LayerOrchestrator();
-        $surfaceLayers->initBaseLayer($this->planetSize, $this->planetSize, '#000', 127);
-        $surface = $surfaceLayers->render();
-
-        $seed = rand();
-
-        $height = $this->planetSize;
-        $width = $this->planetSize;
-
-        $gen = new PerlinNoiseGenerator();
-        $size = $this->planetSize;
-        // 0.99 => full mini islands, 0.5 => large continents
-        $gen->setPersistence(0.68); // 0.68 is nice
-        $gen->setSize($size);
-        $gen->setMapSeed($seed);
-        $map = $gen->generate();
-
-        $max = 0;
-        $min = PHP_INT_MAX;
-        for ($iy = 0; $iy < $height; $iy++) {
-            for ($ix = 0; $ix < $width; $ix++) {
-                $h = $map[$iy][$ix];
-                if ($min > $h) {
-                    $min = $h;
-                }
-                if ($max < $h) {
-                    $max = $h;
-                }
-            }
-        }
-
-        $diff = $max - $min;
-
-        list($r, $g, $b) = ColorHelper::hexToRgb($palette['ice']); // ICE
-        $ice = imagecolorallocate($surface, $r, $g, $b);
-        list($r, $g, $b) = ColorHelper::hexToRgb($palette['water']); // WATER
-        $water = imagecolorallocate($surface, $r, $g, $b);
-        list($r, $g, $b) = ColorHelper::hexToRgb($palette['shore']); // SHORE
-        $shore = imagecolorallocate($surface, $r, $g, $b);
-        list($r, $g, $b) = ColorHelper::hexToRgb($palette['land']); // LAND
-        $land = imagecolorallocate($surface, $r, $g, $b);
-
-        for ($x = 0; $x < $width; ++$x) {
-            for ($y = 0; $y < $height; ++$y) {
-                $h = 255 * ($map[$y][$x] - $min) / $diff;
-                $h = intval($h);
-
-                $color = $water;
-                imagesetpixel($surface, $x, $y, $color);
-
-                if ($h >= 50 && $h < 105) {
-                    $color = $land;
-                    imagesetpixel($surface, $x, $y, $color);
-                }
-
-                if ($h >= 110 && $h < 150) {
-                    $color = $land;
-                    imagesetpixel($surface, $x, $y, $color);
-                }
-
-                if ($h >= 150 && $h < 180) {
-                    imagesetpixel($surface, $x -1, $y -1, $water);
-                    imagesetpixel($surface, $x, $y, $shore);
-                }
-
-                if ($h >= 200) {
-                    $color = $ice;
-                    imagesetpixel($surface, $x, $y, $color);
-                }
-
-                // add texture
-                $color = imagecolorallocatealpha($surface, $h, $h, $h, rand(50, 110));
-                imagesetpixel($surface, $x, $y, $color);
-            }
-        }
-
-        $x = ($this->width / 2) - ($width / 2);
-        $y = ($this->height / 2) - ($height / 2);
-
-        $layerOrchestrator->addLayer($surface, $x, $y);
-
-        return $layerOrchestrator->render();
-    }
-
+    // TODO: move in a Drawer\Gd class
     private function applyMask(&$picture, $mask)
     {
         // Get sizes and set up new picture
@@ -307,55 +227,6 @@ class Planet
         // Copy back to original picture
         imagedestroy($picture);
         $picture = $newPicture;
-    }
-
-    private function selectPalette(): array
-    {
-        // TODO: find real names
-        $palettes = [
-            'terran' => [
-                'NAME' => 'Terran',
-                'water' => '#426dfc',
-                'shore' => '#519a47',
-                'land' => '#3B5D38',
-                'ice' => '#FFFFFF'
-            ],
-            'ashes' => [
-                'NAME' => 'Ashes',
-                'water' => '#000000',
-                'shore' => '#9c7a14',
-                'land' => '#343434',
-                'ice' => '#c8c6bf'
-            ],
-            'toxic' => [
-                'NAME' => 'Toxic',
-                'water' => '#12e2a3',
-                'shore' => '#ffffff',
-                'land' => '#389168',
-                'ice' => '#ddf516'
-            ],
-            'violet' => [
-                'NAME' => 'Violet',
-                'water' => '#e14594',
-                'shore' => '#939cf6',
-                'land' => '#2b3595',
-                'ice' => '#182952'
-            ],
-            'lava' => [
-                'NAME' => 'Lava',
-                'water' => '#ff4f16',
-                'shore' => '#ffa616',
-                'land' => '#ff7716',
-                'ice' => '#f8ec00'
-            ],
-        ];
-
-        $keys = array_keys($palettes);
-        shuffle($keys);
-
-        $paletteName = current($keys);
-
-        return $palettes[$paletteName];
     }
 
     // TODO: move to dedicated Math class
