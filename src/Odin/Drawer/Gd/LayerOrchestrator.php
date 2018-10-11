@@ -4,11 +4,27 @@ declare(strict_types=1);
 
 namespace Odin\Drawer\Gd;
 
+/**
+ * Orchestrate image resources (seen as "layers").
+ * This allows to stack layers to compose a brand new flattened layer.
+ *
+ * @author Adrien Pétremann <hello@grena.fr>
+ */
 class LayerOrchestrator
 {
+    /** @var int */
+    public const TRANSPARENT = 127;
+
     private $image;
+
+    /** @var int */
     private $width;
+
+    /** @var int */
     private $height;
+
+    /** @var array */
+    private $layers = [];
 
     public function initBaseLayer(int $width, int $height, string $hexColor = '#000', int $alpha = 0): void
     {
@@ -36,12 +52,14 @@ class LayerOrchestrator
         imagefill($this->image, 0, 0, $backgroundColor);
     }
 
-    public function addLayer($layer, int $dst_x = 0, int $dst_y = 0): void
+    public function addLayer($layer, int $dstX = 0, int $dstY = 0): void
     {
+        $this->layers[] = $layer;
+
         $xSize = imagesx($layer);
         $ySize = imagesy($layer);
 
-        imagecopy($this->image, $layer, $dst_x, $dst_y, 0, 0, $xSize, $ySize);
+        imagecopy($this->image, $layer, $dstX, $dstY, 0, 0, $xSize, $ySize);
     }
 
     public function render()
