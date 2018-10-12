@@ -33,10 +33,10 @@ class Nebulae
         list($r, $g, $b) = ColorHelper::hexToRgb($this->hexColor);
 
         $seed = rand();
-        $this->initializeImage();
 
         $layerOrchestrator = new LayerOrchestrator();
-        $layerOrchestrator->setBaseLayer($this->image);
+        $layerOrchestrator->initBaseLayer($this->width, $this->height, '#000', LayerOrchestrator::TRANSPARENT);
+        $this->image = $layerOrchestrator->render();
 
         $nebulaeDisplayThreshold = 180; // the less, the more we display the nebulae (max 255)
         $nebulaeOpacity = 123; // 0 - 127 (127 = fully transparent) 115 ok
@@ -80,14 +80,6 @@ class Nebulae
 
         // TODO: find a way to blur the nebulae without losing the opacity
         return $this->image;
-    }
-
-    private function initializeImage(): void
-    {
-        $this->image = imagecreatetruecolor($this->width, $this->height);
-        imagesavealpha($this->image, true);
-        $transparentBackground = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
-        imagefill($this->image, 0, 0, $transparentBackground);
     }
 
     private function filterMultiplyColor($canvas, $filter_r, $filter_g, $filter_b)
