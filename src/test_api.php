@@ -7,7 +7,6 @@ include_once (__DIR__ . '/../vendor/autoload.php');
 
 use Odin\Astronomical\Nebulae;
 use Odin\Astronomical\Planet\Planet;
-use Odin\Astronomical\Planet\Surface\Biome;
 use Odin\Astronomical\StarField;
 use Odin\Drawer\Gd\LayerOrchestrator;
 use Odin\Drawer\Gd\Text;
@@ -16,6 +15,7 @@ $WIDTH = 500;
 $HEIGHT = 500;
 
 $seed = rand();
+//$seed = 1171281281;
 mt_srand($seed);
 
 $layerOrchestrator = new LayerOrchestrator();
@@ -41,8 +41,12 @@ $nebulae = new Nebulae($WIDTH, $HEIGHT);
 $nebulae->setColor('#fb3a76');
 $layerOrchestrator->addLayer($nebulae->render());
 
+$biomes = ['Ashes', 'Lava', 'Terran', 'Toxic', 'Violet'];
+shuffle($biomes);
+$biomeName = current($biomes);
+
 // Planet
-$planet = new Planet('Lava');
+$planet = new Planet($biomeName);
 $layerOrchestrator->addLayer($planet->render(), 0, 0);
 //$planet = new Planet($WIDTH, $HEIGHT);
 //$layerOrchestrator->addLayer($planet->render(), -300, -400);
