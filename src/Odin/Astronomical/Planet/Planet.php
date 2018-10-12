@@ -174,7 +174,7 @@ class Planet
 
         $black = imagecolorallocatealpha($mask, 0, 30, 0, 0);
 
-        imagefilledellipse($mask, $this->layerWidth / 2, $this->layerHeight / 2, $this->planetSize, $this->planetSize, $black);
+        imagefilledellipse($mask, $this->layerWidth / 2, $this->layerHeight / 2, $this->planetSize, $this->planetSize - 1, $black);
 
         return $mask;
     }
