@@ -13,6 +13,21 @@ namespace Odin\Astronomical\Planet\Surface;
 class ToxicBiome extends AbstractBiome
 {
     /**
+     * @see http://libnoise.sourceforge.net/glossary/index.html#persistence
+     * "A multiplier that determines how quickly the amplitudes diminish for each
+     * successive octave in a Perlin-noise function."
+     *
+     * Example:
+     * 0.99 => Lot of mini islands
+     * 0.5 => Large continents
+     *
+     * 0.68 looks quite consistent
+     *
+     * @var float
+     */
+    protected $noisePersistence = 0.85;
+
+    /**
      * {@inheritdoc}
      */
     public function getName(): string
@@ -27,9 +42,10 @@ class ToxicBiome extends AbstractBiome
     {
         return [
             'water' => '#12e2a3',
-            'shore' => '#ffffff',
+            'shore' => '#ffffe7',
             'land' => '#389168',
-            'ice' => '#ddf516',
+            'acid' => '#ddf516',
+            'dark_acid' => '#ddb016',
         ];
     }
 
@@ -53,8 +69,23 @@ class ToxicBiome extends AbstractBiome
             imagesetpixel($layer, $x, $y, $colors['shore']);
         }
 
-        if ($h >= 200) {
-            imagesetpixel($layer, $x, $y, $colors['ice']);
+        if ($h >= 190) {
+            imagesetpixel($layer, $x, $y, $colors['acid']);
         }
+
+        if ($h >= 202) {
+            imagesetpixel($layer, $x, $y, $colors['water']);
+        }
+
+        if ($h >= 204) {
+            imagesetpixel($layer, $x, $y, $colors['acid']);
+        }
+
+        if ($h >= 245) {
+            imagesetpixel($layer, $x, $y, $colors['dark_acid']);
+        }
+
+        $textureColor = imagecolorallocatealpha($layer, $h, $h, $h, rand(50, 110));
+        imagesetpixel($layer, $x, $y, $textureColor);
     }
 }

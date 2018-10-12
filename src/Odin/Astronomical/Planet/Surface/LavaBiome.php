@@ -12,6 +12,21 @@ namespace Odin\Astronomical\Planet\Surface;
 class LavaBiome extends AbstractBiome
 {
     /**
+     * @see http://libnoise.sourceforge.net/glossary/index.html#persistence
+     * "A multiplier that determines how quickly the amplitudes diminish for each
+     * successive octave in a Perlin-noise function."
+     *
+     * Example:
+     * 0.99 => Lot of mini islands
+     * 0.5 => Large continents
+     *
+     * 0.68 looks quite consistent
+     *
+     * @var float
+     */
+    protected $noisePersistence = 0.75;
+
+    /**
      * {@inheritdoc}
      */
     public function getName(): string
@@ -26,9 +41,11 @@ class LavaBiome extends AbstractBiome
     {
         return [
             'water' => '#ff4f16',
-            'shore' => '#ffa616',
+            'shore' => '#ffb783',
             'land' => '#ff7716',
-            'ice' => '#f8ec00'
+            'small_rock' => '#3f0203',
+            'rock' => '#2e2e2e',
+            'ashes' => '#901e26',
         ];
     }
 
@@ -53,7 +70,31 @@ class LavaBiome extends AbstractBiome
         }
 
         if ($h >= 200) {
-            imagesetpixel($layer, $x, $y, $colors['ice']);
+            imagesetpixel($layer, $x, $y, $colors['small_rock']);
         }
+
+        if ($h >= 215) {
+            imagesetpixel($layer, $x, $y, $colors['rock']);
+        }
+
+        if ($h >= 216) {
+            imagesetpixel($layer, $x, $y, $colors['ashes']);
+        }
+
+        if ($h >= 218) {
+            imagesetpixel($layer, $x, $y, $colors['rock']);
+        }
+
+        if ($h >= 220) {
+            imagesetpixel($layer, $x, $y, $colors['ashes']);
+        }
+
+        if ($h >= 222) {
+            imagesetpixel($layer, $x, $y, $colors['rock']);
+        }
+
+        $textureH = 255 - $h;
+        $textureColor = imagecolorallocatealpha($layer, $textureH, $textureH, $textureH, rand(50, 110));
+        imagesetpixel($layer, $x, $y, $textureColor);
     }
 }

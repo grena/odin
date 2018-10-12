@@ -13,6 +13,21 @@ namespace Odin\Astronomical\Planet\Surface;
 class AshesBiome extends AbstractBiome
 {
     /**
+     * @see http://libnoise.sourceforge.net/glossary/index.html#persistence
+     * "A multiplier that determines how quickly the amplitudes diminish for each
+     * successive octave in a Perlin-noise function."
+     *
+     * Example:
+     * 0.99 => Lot of mini islands
+     * 0.5 => Large continents
+     *
+     * 0.68 looks quite consistent
+     *
+     * @var float
+     */
+    protected $noisePersistence = 0.68;
+
+    /**
      * {@inheritdoc}
      */
     public function getName(): string
@@ -27,7 +42,7 @@ class AshesBiome extends AbstractBiome
     {
         return [
             'water' => '#000000',
-            'shore' => '#9c7a14',
+            'shore' => '#846711',
             'land' => '#343434',
             'ice' => '#c8c6bf'
         ];
@@ -40,7 +55,7 @@ class AshesBiome extends AbstractBiome
     {
         imagesetpixel($layer, $x, $y, $colors['water']);
 
-        if ($h >= 50 && $h < 105) {
+        if ($h >= 15 && $h < 105) {
             imagesetpixel($layer, $x, $y, $colors['land']);
         }
 
@@ -56,5 +71,8 @@ class AshesBiome extends AbstractBiome
         if ($h >= 200) {
             imagesetpixel($layer, $x, $y, $colors['ice']);
         }
+
+        $textureColor = imagecolorallocatealpha($layer, $h, $h, $h, rand(50, 110));
+        imagesetpixel($layer, $x, $y, $textureColor);
     }
 }
