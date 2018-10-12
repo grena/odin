@@ -75,10 +75,6 @@ abstract class AbstractBiome implements BiomeInterface
 
                 // This is where each biome will draw its own surface
                 $this->fillSurface($x, $y, $h, $surface, $allocatedColors);
-
-                // Add texture (small grey dots with random opacity)
-                $textureColor = imagecolorallocatealpha($surface, $h, $h, $h, rand(50, 110));
-                imagesetpixel($surface, $x, $y, $textureColor);
             }
         }
 
