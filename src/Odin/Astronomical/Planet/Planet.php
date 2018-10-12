@@ -77,7 +77,12 @@ class Planet
         $layerOrchestrator->addLayer($planetLayer);
 
         $image = $layerOrchestrator->render();
-        Text::write($image, 'Palette: '.$surfaceGenerator->getName(), 10, 35);
+        Text::write(
+            $image,
+            $surfaceGenerator->getName(),
+            ($this->layerWidth - $this->planetSize / 2) + 15,
+            $this->layerHeight / 2
+        );
 
         $this->image = $layerOrchestrator->render();
 
