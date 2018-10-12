@@ -33,7 +33,7 @@ class Planet
         if (null !== $planetSize) {
             $this->planetSize = $planetSize;
         } else {
-            $this->planetSize = $this->makeEven(rand(100, 250));
+            $this->planetSize = $this->makeEven(rand(150, 250));
         }
 
         $this->layerWidth = $this->planetSize * 2;
