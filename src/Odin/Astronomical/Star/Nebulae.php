@@ -91,15 +91,18 @@ class Nebulae
             for ($y = 0; $y < $height; ++$y) {
                 $rgb = imagecolorat($canvas, $x, $y);
                 $TabColors = imagecolorsforindex($canvas, $rgb);
+
+                if ($TabColors['alpha'] >= 127) {
+                    continue;
+                }
+
                 $color_r = intval(floor($TabColors['red'] * $filter_r / 255));
                 $color_g = intval(floor($TabColors['green'] * $filter_g / 255));
                 $color_b = intval(floor($TabColors['blue'] * $filter_b / 255));
                 $color_alpha = $TabColors['alpha'];
                 $newcol = imagecolorallocatealpha($canvas, $color_r, $color_g, $color_b, $color_alpha);
 
-                if ($TabColors['alpha'] < 127) {
-                    imagesetpixel($canvas, $x, $y, $newcol);
-                }
+                imagesetpixel($canvas, $x, $y, $newcol);
             }
         }
     }
