@@ -42,7 +42,7 @@ class AshesBiome extends AbstractBiome
     {
         return [
             'water' => '#000000',
-            'shore' => '#846711',
+            'shore' => '#4d3c0a',
             'land' => '#343434',
             'ice' => '#c8c6bf'
         ];
@@ -63,7 +63,7 @@ class AshesBiome extends AbstractBiome
             imagesetpixel($layer, $x, $y, $colors['land']);
         }
 
-        if ($h >= 150 && $h < 180) {
+        if ($h >= 170 && $h < 180) {
             imagesetpixel($layer, $x - 1, $y - 1, $colors['water']);
             imagesetpixel($layer, $x, $y, $colors['shore']);
         }
