@@ -13,6 +13,9 @@ class BiomeSurfaceGeneratorRegistry
         '\Odin\Astronomical\Planet\Surface\AshesBiome',
         '\Odin\Astronomical\Planet\Surface\VioletBiome',
         '\Odin\Astronomical\Planet\Surface\LavaBiome',
+        '\Odin\Astronomical\Planet\Surface\ColdGazBiome',
+        '\Odin\Astronomical\Planet\Surface\HotGazBiome',
+        '\Odin\Astronomical\Planet\Surface\HydroGazBiome',
     ];
 
     public function forBiome(string $biomeName)
