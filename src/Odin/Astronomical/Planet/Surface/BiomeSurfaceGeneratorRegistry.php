@@ -13,6 +13,8 @@ class BiomeSurfaceGeneratorRegistry
         '\Odin\Astronomical\Planet\Surface\AshesBiome',
         '\Odin\Astronomical\Planet\Surface\VioletBiome',
         '\Odin\Astronomical\Planet\Surface\LavaBiome',
+        '\Odin\Astronomical\Planet\Surface\AtollBiome',
+        '\Odin\Astronomical\Planet\Surface\MoonBiome',
         '\Odin\Astronomical\Planet\Surface\ColdGazBiome',
         '\Odin\Astronomical\Planet\Surface\HotGazBiome',
         '\Odin\Astronomical\Planet\Surface\HydroGazBiome',
