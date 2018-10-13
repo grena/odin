@@ -11,8 +11,8 @@ use Odin\Astronomical\StarField;
 use Odin\Drawer\Gd\LayerOrchestrator;
 use Odin\Drawer\Gd\Text;
 
-$WIDTH = 500;
-$HEIGHT = 500;
+$WIDTH = 800;
+$HEIGHT = 800;
 
 $seed = rand();
 //$seed = 1171281281;
@@ -23,14 +23,14 @@ $layerOrchestrator->initBaseLayer($WIDTH, $HEIGHT, '#000', 0);
 
 // Back starfield
 $starfield = new StarField($WIDTH, $HEIGHT);
-$starfield->setBrightness(0, 30);
+$starfield->setBrightness(0, 15);
 $layerOrchestrator->addLayer($starfield->render());
-
+//
 // Front starfield
 $starfield = new StarField($WIDTH, $HEIGHT);
-$starfield->setBrightness(0, 80);
+$starfield->setBrightness(0, 60);
 $layerOrchestrator->addLayer($starfield->render());
-
+//
 // First blue nebulae
 $nebulae = new Nebulae($WIDTH, $HEIGHT);
 $nebulae->setColor('#4E2DB2');
@@ -41,15 +41,27 @@ $nebulae = new Nebulae($WIDTH, $HEIGHT);
 $nebulae->setColor('#fb3a76');
 $layerOrchestrator->addLayer($nebulae->render());
 
-$biomes = ['Ashes', 'Lava', 'Terran', 'Toxic', 'Violet'];
+$biomes = [
+    'Ashes',
+    'Lava',
+    'Forest',
+    'Toxic',
+    'Violet',
+    'Cold Gaz',
+    'Hydro Gaz',
+    'Hot Gaz',
+    'Atoll',
+];
 shuffle($biomes);
 $biomeName = current($biomes);
 
 // Planet
-$planet = new Planet($biomeName);
+$planetSize = rand(75, 200) * 2;
+$planet = new Planet($biomeName, $planetSize);
 $layerOrchestrator->addLayer($planet->render(), 0, 0);
-//$planet = new Planet($WIDTH, $HEIGHT);
-//$layerOrchestrator->addLayer($planet->render(), -300, -400);
+
+$planet = new Planet('Moon', 60);
+$layerOrchestrator->addLayer($planet->render(), $planetSize + 250, 300);
 
 $image = $layerOrchestrator->render();
 
