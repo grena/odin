@@ -9,7 +9,7 @@ class BiomeSurfaceGeneratorRegistry
 {
     private $generatorClasses = [
         '\Odin\Astronomical\Planet\Surface\ToxicBiome',
-        '\Odin\Astronomical\Planet\Surface\TerranBiome',
+        '\Odin\Astronomical\Planet\Surface\ForestBiome',
         '\Odin\Astronomical\Planet\Surface\AshesBiome',
         '\Odin\Astronomical\Planet\Surface\VioletBiome',
         '\Odin\Astronomical\Planet\Surface\LavaBiome',
