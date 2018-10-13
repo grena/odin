@@ -80,8 +80,8 @@ class Planet
         Text::write(
             $image,
             $surfaceGenerator->getName(),
-            ($this->layerWidth - $this->planetSize / 2) + 15,
-            $this->layerHeight / 2
+            $this->layerWidth / 2 - 15,
+            ($this->layerHeight / 2 - $this->planetSize / 2) - 15
         );
 
         $this->image = $layerOrchestrator->render();
