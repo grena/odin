@@ -28,7 +28,7 @@ $moonImage = $moon
 // $moonImage is a \SplFileObject, you're free to do what you want with it
 ```
 
-## Rendering the same object later
+## Render the same object later
 
 It's possible to render the same moon in different PHP processes (it works also for the planets and star fields). To achieve that, you just need to pass the `seed` to your object.
 
@@ -40,7 +40,7 @@ $moonImage = $moon
     ->render();
 ```
 
-## Rendering multiple times an object
+## Render multiple times an object
 
 It's possible to render the same planet several times (it works also for the moons and star fields). You'll get the same image results.
 
@@ -53,4 +53,10 @@ $firstImage = $planet->render();
 $secondImage = $planet->render();
 
 // $firstImage and $secondImage are two different files. But their content are identical.
+```
+
+## Launch the tests
+
+```bash
+./vendor/bin/phpspec run
 ```
