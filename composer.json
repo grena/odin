@@ -14,5 +14,8 @@
             "name": "Adrien Pétremann",
             "email": "hello@grena.fr"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpspec/phpspec": "^5.1"
+    }
 }
