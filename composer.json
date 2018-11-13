@@ -7,7 +7,9 @@
         "a1essandro/perlin-noise": "@stable"
     },
     "autoload": {
-        "classmap": ["src/"]
+        "psr-0": {
+            "": "src/"
+        }
     },
     "authors": [
         {
