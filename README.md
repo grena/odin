@@ -27,3 +27,17 @@ $moonImage = $moon
     ->render();
 // $moonImage is a \SplFileObject, you're free to do what you want with it
 ```
+
+## Rendering multiple times an object
+
+You can render the same planet several times (it works also for the moons and star fields). You'll get the same image results.
+
+```php
+$planet = new Odin\Planet();
+$planet->diameter(300)->lava();
+
+$firstImage = $planet->render();
+$secondImage = $planet->render();
+
+// $firstImage and $secondImage are two different files. But their content are identical.
+```

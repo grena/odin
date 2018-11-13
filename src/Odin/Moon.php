@@ -15,9 +15,13 @@ class Moon
     /** @var LayerOrchestrator */
     private $layerOrchestrator;
 
+    /** @var int */
+    private $seed;
+
     public function __construct()
     {
         $this->layerOrchestrator = new LayerOrchestrator();
+        $this->seed = rand();
     }
 
     public function diameter(int $diameterInPixels): self
@@ -29,6 +33,8 @@ class Moon
 
     public function render(): \SplFileObject
     {
+        mt_srand($this->seed);
+
         if (null === $this->diameter) {
             throw new \LogicException('The moon can not be rendered without a diameter.');
         }
