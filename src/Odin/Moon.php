@@ -18,10 +18,10 @@ class Moon
     /** @var int */
     private $seed;
 
-    public function __construct()
+    public function __construct(?int $seed = null)
     {
         $this->layerOrchestrator = new LayerOrchestrator();
-        $this->seed = rand();
+        $this->seed = $seed ?? rand();
     }
 
     public function diameter(int $diameterInPixels): self
