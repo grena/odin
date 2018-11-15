@@ -46,7 +46,6 @@ class Moon
         $image = $this->layerOrchestrator->render();
         $imagePath =  $this->generateImagePath($this->configuration);
 
-        header('Content-Type: image/png');
         imagepng($image, $imagePath);
         imagedestroy($image);
 

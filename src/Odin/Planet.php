@@ -2,7 +2,7 @@
 
 namespace Odin;
 
-use Odin\Astronomical\Planet\Planet as InternalPLanet;
+use Odin\Astronomical\Planet\Planet as InternalPlanet;
 use Odin\Drawer\Gd\LayerOrchestrator;
 
 class Planet
@@ -107,14 +107,13 @@ class Planet
             throw new \LogicException('The planet can not be rendered without a biome.');
         }
 
-        $planet = new InternalPLanet($this->biome, $this->diameter);
+        $planet = new InternalPlanet($this->biome, $this->diameter);
         $this->layerOrchestrator->initTransparentBaseLayer($this->diameter, $this->diameter);
         $this->layerOrchestrator->addLayer($planet->render(), -$this->diameter / 2, -$this->diameter / 2);
 
         $image = $this->layerOrchestrator->render();
         $imagePath = $this->generateImagePath($this->configuration);
 
-        header('Content-Type: image/png');
         imagepng($image, $imagePath);
         imagedestroy($image);
 
