@@ -50,7 +50,7 @@ $secondImage = $planet->render();
 Objects rendering can be configured. 
 
 ```php
-$configuration = new Odin\CelestialConfiguration();
+$configuration = new Odin\Configuration();
 $planet = new Planet($configuration);
 ```
 
@@ -59,7 +59,7 @@ $planet = new Planet($configuration);
 It's possible to define where the images will be rendered. By default, they will be generated in `/tmp`.
 
 ```php
-$configuration = new Odin\CelestialConfiguration('my/custom/path/for/images');
+$configuration = new Odin\Configuration('my/custom/path/for/images');
 ```
 
 ### Render the same object later
@@ -68,7 +68,7 @@ It's possible to render the same object in different PHP processes or requests. 
 
 ```php
 $seed = 42;
-$moon = new Odin\CelestialConfiguration(null, $seed);
+$moon = new Odin\Configuration(null, $seed);
 ```
 
 ## Launch the tests

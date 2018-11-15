@@ -2,12 +2,12 @@
 
 namespace spec\Odin;
 
-use Odin\CelestialConfiguration;
+use Odin\Configuration;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Symfony\Component\Filesystem\Filesystem;
 
-class CelestialConfigurationSpec extends ObjectBehavior
+class ConfigurationSpec extends ObjectBehavior
 {
     /** @var Filesystem */
     private $fileSystem;
@@ -25,7 +25,7 @@ class CelestialConfigurationSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(CelestialConfiguration::class);
+        $this->shouldHaveType(Configuration::class);
     }
 
     function it_has_a_default_directory_to_render_images()

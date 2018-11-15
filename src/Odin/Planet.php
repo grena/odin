@@ -16,13 +16,13 @@ class Planet
     /** @var LayerOrchestrator */
     private $layerOrchestrator;
 
-    /** @var CelestialConfiguration */
+    /** @var Configuration */
     private $configuration;
 
-    public function __construct(?CelestialConfiguration $configuration = null)
+    public function __construct(?Configuration $configuration = null)
     {
         $this->layerOrchestrator = new LayerOrchestrator();
-        $this->configuration = $configuration ?? new CelestialConfiguration();
+        $this->configuration = $configuration ?? new Configuration();
     }
 
     public function diameter(int $diameterInPixels): self
@@ -120,7 +120,7 @@ class Planet
         return new \SplFileObject($imagePath);
     }
 
-    private function generateImagePath(?CelestialConfiguration $configuration): string
+    private function generateImagePath(?Configuration $configuration): string
     {
         $name = uniqid('odin-planet-') . '.png';
         $directory = sys_get_temp_dir();

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Odin;
 
-class CelestialConfiguration
+class Configuration
 {
     /** @var string */
     private $directory;

@@ -2,7 +2,7 @@
 
 namespace spec\Odin;
 
-use Odin\CelestialConfiguration;
+use Odin\Configuration;
 use Odin\Moon;
 use PhpSpec\Exception\Example\NotEqualException;
 use PhpSpec\ObjectBehavior;
@@ -37,7 +37,7 @@ class MoonSpec extends ObjectBehavior
 
     function it_renders_the_same_moon_with_a_given_seed()
     {
-        $this->beConstructedWith(new CelestialConfiguration(null, 42));
+        $this->beConstructedWith(new Configuration(null, 42));
         $moon = $this->diameter(50);
 
         $initialRendering = new \SplFileObject(__DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'odin-moon-seed-42.png');
@@ -51,7 +51,7 @@ class MoonSpec extends ObjectBehavior
         $fileSystem = new Filesystem();
         $fileSystem->mkdir('/tmp/odin', 0744);
 
-        $this->beConstructedWith(new CelestialConfiguration('/tmp/odin'));
+        $this->beConstructedWith(new Configuration('/tmp/odin'));
 
         $this->diameter(50)->render()->shouldReturnAnInstanceOf(\SplFileObject::class);
 
