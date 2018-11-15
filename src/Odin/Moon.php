@@ -18,10 +18,14 @@ class Moon
     /** @var int */
     private $seed;
 
-    public function __construct(?int $seed = null)
+    /** @var CelestialConfiguration */
+    private $configuration;
+
+    public function __construct(?CelestialConfiguration $configuration = null, ?int $seed = null)
     {
         $this->layerOrchestrator = new LayerOrchestrator();
         $this->seed = $seed ?? rand();
+        $this->configuration = $configuration;
     }
 
     public function diameter(int $diameterInPixels): self
@@ -44,12 +48,23 @@ class Moon
         $this->layerOrchestrator->addLayer($moon->render(), -$this->diameter / 2, -$this->diameter / 2);
 
         $image = $this->layerOrchestrator->render();
-        $imagePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('odin-moon-') . '.png';
+        $imagePath =  $this->generateImagePath($this->configuration);
 
         header('Content-Type: image/png');
         imagepng($image, $imagePath);
         imagedestroy($image);
 
         return new \SplFileObject($imagePath);
+    }
+
+    private function generateImagePath(?CelestialConfiguration $configuration): string
+    {
+        $name = uniqid('odin-moon-') . '.png';
+        $directory = sys_get_temp_dir();
+        if (null !== $configuration) {
+            $directory = $configuration->directory();
+        }
+
+        return $directory . DIRECTORY_SEPARATOR . $name;
     }
 }

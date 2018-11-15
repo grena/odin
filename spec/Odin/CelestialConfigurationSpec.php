@@ -5,18 +5,22 @@ namespace spec\Odin;
 use Odin\CelestialConfiguration;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Symfony\Component\Filesystem\Filesystem;
 
 class CelestialConfigurationSpec extends ObjectBehavior
 {
+    /** @var Filesystem */
+    private $fileSystem;
+
     function let()
     {
-        mkdir('/tmp/odin');
-        chmod('/tmp/odin', 0644);
+        $this->fileSystem = new Filesystem();
+        $this->fileSystem->mkdir('/tmp/odin', 0644);
     }
 
     function letGo()
     {
-        rmdir('/tmp/odin');
+        $this->fileSystem->remove('/tmp/odin');
     }
 
     function it_is_initializable()
@@ -43,7 +47,7 @@ class CelestialConfigurationSpec extends ObjectBehavior
 
     function it_throws_an_exception_if_the_directory_is_not_writable()
     {
-        chmod('/tmp/odin', 0444);
+        $this->fileSystem->chmod('/tmp/odin', 0444);
         $this->beConstructedWith('/tmp/odin');
         $this->shouldThrow(\InvalidArgumentException::class)->duringInstantiation();
     }

@@ -4,7 +4,8 @@
     "require": {
         "php": ">=7.1.0",
         "ext-gd": "@stable",
-        "a1essandro/perlin-noise": "@stable"
+        "a1essandro/perlin-noise": "@stable",
+        "symfony/filesystem": "^4.1"
     },
     "autoload": {
         "psr-0": {

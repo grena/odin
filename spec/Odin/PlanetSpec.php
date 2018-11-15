@@ -2,10 +2,12 @@
 
 namespace spec\Odin;
 
+use Odin\CelestialConfiguration;
 use Odin\Planet;
 use PhpSpec\Exception\Example\NotEqualException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Symfony\Component\Filesystem\Filesystem;
 
 class PlanetSpec extends ObjectBehavior
 {
@@ -83,13 +85,25 @@ class PlanetSpec extends ObjectBehavior
 
     function it_renders_the_same_planet_with_a_given_seed()
     {
-        $this->beConstructedWith(42);
+        $this->beConstructedWith(null, 42);
         $planet = $this->diameter(50)->lava();
 
         $initialRendering = new \SplFileObject(__DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'odin-planet-seed-42.png');
         $laterRendering = $planet->render()->getWrappedObject();
 
         $this->assertFilesContentIdentical($initialRendering, $laterRendering);
+    }
+
+    function it_renders_a_planet_image_in_a_particular_directory()
+    {
+        $fileSystem = new Filesystem();
+        $fileSystem->mkdir('/tmp/odin', 0744);
+
+        $this->beConstructedWith(new CelestialConfiguration('/tmp/odin'));
+
+        $this->diameter(50)->lava()->render()->shouldReturnAnInstanceOf(\SplFileObject::class);
+
+        $fileSystem->remove('/tmp/odin');
     }
 
     /**
