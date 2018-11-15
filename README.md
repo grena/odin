@@ -30,6 +30,28 @@ $image = $moon
 // $image is a \SplFileObject, you're free to do what you want with it
 ```
 
+## Render star fields
+
+Star fields are compound by several star fields and nebulaes. A star field can be more or less bright. A nebulae has its own size and colour.
+
+```php
+$starFields = new Odin\StarFields();
+$image = $starFields
+    ->width(800)
+    ->height(600)
+    ->addStarField(15) // maximum brightness of 15
+    ->addStarField(60) // maximum brightness of 60
+    ->addNebulae(
+        400,       // width
+        300,       // height
+        '#4E2DB2', // color
+    )
+    ->render()
+;
+
+// $image is a \SplFileObject, you're free to do what you want with it
+```
+
 ## Render multiple times an object
 
 It's possible to render the same planet several times (it works also for moons and star fields). You'll get the same image results.
