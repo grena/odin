@@ -11,9 +11,30 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class MoonSpec extends ObjectBehavior
 {
+    /** @var Filesystem */
+    private $fileSystem;
+
+    private const PATH = '/tmp/odin';
+
+    public function __construct()
+    {
+        $this->fileSystem = new Filesystem();
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType(Moon::class);
+    }
+
+    function let()
+    {
+        $this->fileSystem->mkdir(self::PATH, 0744);
+        $this->beConstructedWith(new Configuration(self::PATH));
+    }
+
+    function letGo()
+    {
+        $this->fileSystem->remove(self::PATH);
     }
 
     function it_throws_an_exception_when_rendering_a_planet_without_diameter()
@@ -37,7 +58,7 @@ class MoonSpec extends ObjectBehavior
 
     function it_renders_the_same_moon_with_a_given_seed()
     {
-        $this->beConstructedWith(new Configuration(null, 42));
+        $this->beConstructedWith(new Configuration(self::PATH, 42));
         $moon = $this->diameter(50);
 
         $initialRendering = new \SplFileObject(__DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'odin-moon-seed-42.png');
@@ -49,13 +70,13 @@ class MoonSpec extends ObjectBehavior
     function it_renders_a_moon_image_in_a_particular_directory()
     {
         $fileSystem = new Filesystem();
-        $fileSystem->mkdir('/tmp/odin', 0744);
+        $fileSystem->mkdir('/tmp/odin-celestial-planet-generator', 0744);
 
-        $this->beConstructedWith(new Configuration('/tmp/odin'));
+        $this->beConstructedWith(new Configuration('/tmp/odin-celestial-planet-generator'));
 
         $this->diameter(50)->render()->shouldReturnAnInstanceOf(\SplFileObject::class);
 
-        $fileSystem->remove('/tmp/odin');
+        $fileSystem->remove('/tmp/odin-celestial-planet-generator');
     }
     
     /**
