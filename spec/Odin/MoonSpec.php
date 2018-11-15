@@ -37,7 +37,7 @@ class MoonSpec extends ObjectBehavior
 
     function it_renders_the_same_moon_with_a_given_seed()
     {
-        $this->beConstructedWith(null, 42);
+        $this->beConstructedWith(new CelestialConfiguration(null, 42));
         $moon = $this->diameter(50);
 
         $initialRendering = new \SplFileObject(__DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'odin-moon-seed-42.png');

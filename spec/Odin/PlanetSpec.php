@@ -85,7 +85,7 @@ class PlanetSpec extends ObjectBehavior
 
     function it_renders_the_same_planet_with_a_given_seed()
     {
-        $this->beConstructedWith(null, 42);
+        $this->beConstructedWith(new CelestialConfiguration(null, 42));
         $planet = $this->diameter(50)->lava();
 
         $initialRendering = new \SplFileObject(__DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'odin-planet-seed-42.png');

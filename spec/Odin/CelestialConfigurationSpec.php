@@ -51,4 +51,16 @@ class CelestialConfigurationSpec extends ObjectBehavior
         $this->beConstructedWith('/tmp/odin');
         $this->shouldThrow(\InvalidArgumentException::class)->duringInstantiation();
     }
+
+    function it_has_a_default_seed()
+    {
+        $this->beConstructedWith();
+        $this->seed()->shouldBeInteger();
+    }
+
+    function it_has_a_fixed_seed()
+    {
+        $this->beConstructedWith(null, 42);
+        $this->seed()->shouldReturn(42);
+    }
 }

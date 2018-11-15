@@ -9,7 +9,10 @@ class CelestialConfiguration
     /** @var string */
     private $directory;
 
-    public function __construct(?string $directory = null)
+    /** @var int */
+    private $seed;
+
+    public function __construct(?string $directory = null, int $seed = null)
     {
         if (null !== $directory) {
             if (!is_dir($directory)) {
@@ -22,10 +25,16 @@ class CelestialConfiguration
         }
 
         $this->directory = $directory ?? sys_get_temp_dir();
+        $this->seed = $seed ?? rand();
     }
 
     public function directory(): string
     {
         return $this->directory;
+    }
+
+    public function seed(): int
+    {
+        return $this->seed;
     }
 }

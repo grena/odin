@@ -30,18 +30,6 @@ $image = $moon
 // $image is a \SplFileObject, you're free to do what you want with it
 ```
 
-## Render the same object later
-
-It's possible to render the same moon in different PHP processes or requests (it works also for planets and star fields). To achieve that, you just need to pass the `seed` to your object.
-
-```php
-$seed = 42;
-$moon = new Odin\Moon($seed);
-$image = $moon
-    ->diameter(150)
-    ->render();
-```
-
 ## Render multiple times an object
 
 It's possible to render the same planet several times (it works also for moons and star fields). You'll get the same image results.
@@ -66,10 +54,21 @@ $configuration = new Odin\CelestialConfiguration();
 $planet = new Planet($configuration);
 ```
 
+### Render objects in a specific directory
+
 It's possible to define where the images will be rendered. By default, they will be generated in `/tmp`.
 
 ```php
 $configuration = new Odin\CelestialConfiguration('my/custom/path/for/images');
+```
+
+### Render the same object later
+
+It's possible to render the same object in different PHP processes or requests. To achieve that, you just need to pass the `seed` to your the configuration.
+
+```php
+$seed = 42;
+$moon = new Odin\CelestialConfiguration(null, $seed);
 ```
 
 ## Launch the tests

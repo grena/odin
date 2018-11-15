@@ -16,17 +16,13 @@ class Planet
     /** @var LayerOrchestrator */
     private $layerOrchestrator;
 
-    /** @var int */
-    private $seed;
-
     /** @var CelestialConfiguration */
     private $configuration;
 
-    public function __construct(?CelestialConfiguration $configuration = null, ?int $seed = null)
+    public function __construct(?CelestialConfiguration $configuration = null)
     {
         $this->layerOrchestrator = new LayerOrchestrator();
-        $this->seed = $seed ?? rand();
-        $this->configuration = $configuration;
+        $this->configuration = $configuration ?? new CelestialConfiguration();
     }
 
     public function diameter(int $diameterInPixels): self
@@ -101,7 +97,7 @@ class Planet
 
     public function render(): \SplFileObject
     {
-        mt_srand($this->seed);
+        mt_srand($this->configuration->seed());
 
         if (null === $this->diameter) {
             throw new \LogicException('The planet can not be rendered without a diameter.');
