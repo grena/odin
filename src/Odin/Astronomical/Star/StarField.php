@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Odin\Astronomical;
+namespace Odin\Astronomical\Star;
 
 use Odin\Drawer\Gd\ColorHelper;
 use Odin\Drawer\Gd\GradientAlpha;
