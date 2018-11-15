@@ -57,6 +57,21 @@ $secondImage = $planet->render();
 // $firstImage and $secondImage are two different files, but their content are identical
 ```
 
+## Configure how objects are rendered
+
+Objects rendering can be configured. 
+
+```php
+$configuration = new Odin\CelestialConfiguration();
+$planet = new Planet($configuration);
+```
+
+It's possible to define where the images will be rendered. By default, they will be generated in `/tmp`.
+
+```php
+$configuration = new Odin\CelestialConfiguration('my/custom/path/for/images');
+```
+
 ## Launch the tests
 
 ```bash
