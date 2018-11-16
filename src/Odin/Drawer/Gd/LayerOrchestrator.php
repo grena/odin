@@ -34,6 +34,18 @@ class LayerOrchestrator
         $this->setBackgroundColor($hexColor, $alpha);
     }
 
+    public function initTransparentBaseLayer(int $width, int $height): void
+    {
+        $this->width = $width;
+        $this->height = $height;
+
+        $this->image = imagecreatetruecolor($this->width, $this->height);
+        imagealphablending($this->image, false);
+        $transparency = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
+        imagefill($this->image, 0, 0, $transparency);
+        imagesavealpha($this->image, true);
+    }
+
     public function setBaseLayer($image): void
     {
         imagesavealpha($image, true);

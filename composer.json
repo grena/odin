@@ -4,15 +4,21 @@
     "require": {
         "php": ">=7.1.0",
         "ext-gd": "@stable",
-        "a1essandro/perlin-noise": "@stable"
+        "a1essandro/perlin-noise": "@stable",
+        "symfony/filesystem": "^4.1"
     },
     "autoload": {
-        "classmap": ["src/"]
+        "psr-0": {
+            "": "src/"
+        }
     },
     "authors": [
         {
             "name": "Adrien Pétremann",
             "email": "hello@grena.fr"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpspec/phpspec": "^5.1"
+    }
 }
