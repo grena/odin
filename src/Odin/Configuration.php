@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Odin;
 
+/**
+ * @author @jjanvier
+ */
 class Configuration
 {
     /** @var string */

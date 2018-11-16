@@ -7,6 +7,9 @@ namespace Odin;
 use Odin\Astronomical\Planet\Planet;
 use Odin\Drawer\Gd\LayerOrchestrator;
 
+/**
+ * @author @jjanvier
+ */
 class Moon
 {
     /** @var int */

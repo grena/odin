@@ -5,6 +5,9 @@ namespace Odin;
 use Odin\Astronomical\Planet\Planet as InternalPlanet;
 use Odin\Drawer\Gd\LayerOrchestrator;
 
+/**
+ * @author @jjanvier
+ */
 class Planet
 {
     /** @var string */
