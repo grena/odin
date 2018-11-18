@@ -8,8 +8,8 @@
         "symfony/filesystem": "^4.1"
     },
     "autoload": {
-        "psr-0": {
-            "": "src/"
+        "psr-4": {
+            "Odin\\": "src/Odin/"
         }
     },
     "authors": [
