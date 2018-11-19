@@ -1,6 +1,7 @@
 {
-    "type": "project",
     "name": "grena/odin",
+    "type": "library",
+    "description": "Odin - The Celestial Planet Generator",
     "require": {
         "php": ">=7.1.0",
         "ext-gd": "@stable",
@@ -15,7 +16,12 @@
     "authors": [
         {
             "name": "Adrien Pétremann",
-            "email": "hello@grena.fr"
+            "email": "hello@grena.fr",
+            "homepage": "http://www.grena.fr/"
+        },
+        {
+            "name": "Julien Janvier",
+            "homepage": "https://github.com/jjanvier/"
         }
     ],
     "require-dev": {
