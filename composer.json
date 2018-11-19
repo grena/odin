@@ -1,6 +1,6 @@
 {
-    "name": "grena/planet-generator",
     "type": "project",
+    "name": "grena/odin",
     "require": {
         "php": ">=7.1.0",
         "ext-gd": "@stable",
