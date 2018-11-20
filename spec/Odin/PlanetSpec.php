@@ -4,6 +4,7 @@ namespace spec\Odin;
 
 use Odin\Configuration;
 use Odin\Planet;
+use PhpSpec\Exception\Example\FailureException;
 use PhpSpec\Exception\Example\NotEqualException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -123,8 +124,13 @@ class PlanetSpec extends ObjectBehavior
         $this->beConstructedWith(new Configuration('/tmp/odin-celestial-planet-generator'));
 
         $this->diameter(50)->lava()->render()->shouldReturnAnInstanceOf(\SplFileObject::class);
-
+        
+        $existingFiles = glob('/tmp/odin-celestial-planet-generator/*png');
         $fileSystem->remove('/tmp/odin-celestial-planet-generator');
+
+        if (empty($existingFiles)) {
+            throw new FailureException('Impossible to create a planet in a particular directory');
+        }
     }
 
     /**

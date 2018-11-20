@@ -93,11 +93,22 @@ class StarFields
         }
 
         $image = $this->layerOrchestrator->render();
-        $imagePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'stars' . uniqid();
+        $imagePath = $this->generateImagePath($this->configuration);
 
         imagepng($image, $imagePath);
         imagedestroy($image);
 
         return new \SplFileObject($imagePath);
+    }
+
+    private function generateImagePath(?Configuration $configuration): string
+    {
+        $name = uniqid('odin-star-fields-') . '.png';
+        $directory = sys_get_temp_dir();
+        if (null !== $configuration) {
+            $directory = $configuration->directory();
+        }
+
+        return $directory . DIRECTORY_SEPARATOR . $name;
     }
 }

@@ -4,6 +4,7 @@ namespace spec\Odin;
 
 use Odin\Configuration;
 use Odin\StarFields;
+use PhpSpec\Exception\Example\FailureException;
 use PhpSpec\Exception\Example\NotEqualException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -94,8 +95,12 @@ class StarFieldsSpec extends ObjectBehavior
         $starFields = $this->height(100)->width(100)->addStarField(100)->addNebulae(100, 100, '#4E2DB2');
         $starFields->render()->shouldReturnAnInstanceOf(\SplFileObject::class);
 
+        $existingFiles = glob('/tmp/odin-celestial-planet-generator/*png');
         $fileSystem->remove('/tmp/odin-celestial-planet-generator');
-    }
+
+        if (empty($existingFiles)) {
+            throw new FailureException('Impossible to create star fields in a particular directory');
+        }    }
 
     /**
      * @throws NotEqualException

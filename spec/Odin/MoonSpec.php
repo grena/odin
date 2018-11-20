@@ -4,6 +4,7 @@ namespace spec\Odin;
 
 use Odin\Configuration;
 use Odin\Moon;
+use PhpSpec\Exception\Example\FailureException;
 use PhpSpec\Exception\Example\NotEqualException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -76,7 +77,12 @@ class MoonSpec extends ObjectBehavior
 
         $this->diameter(50)->render()->shouldReturnAnInstanceOf(\SplFileObject::class);
 
+        $existingFiles = glob('/tmp/odin-celestial-planet-generator/*png');
         $fileSystem->remove('/tmp/odin-celestial-planet-generator');
+
+        if (empty($existingFiles)) {
+            throw new FailureException('Impossible to create a moon in a particular directory');
+        }
     }
     
     /**
