@@ -5,9 +5,9 @@ error_reporting(E_ALL);
 
 include_once (__DIR__ . '/../vendor/autoload.php');
 
-use Odin\Astronomical\Nebulae;
 use Odin\Astronomical\Planet\Planet;
-use Odin\Astronomical\StarField;
+use Odin\Astronomical\Star\Nebulae;
+use Odin\Astronomical\Star\StarField;
 use Odin\Drawer\Gd\LayerOrchestrator;
 use Odin\Drawer\Gd\Text;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Odin\Astronomical;
+namespace Odin\Astronomical\Star;
 
 use MapGenerator\PerlinNoiseGenerator;
 use Odin\Drawer\Gd\ColorHelper;
